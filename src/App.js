@@ -7,11 +7,11 @@ function App() {
   const [tasks, setTasks] = useState([]);
   const [editMode, setEditMode] = useState(false);
   const [id, setId] = useState("");
+  const [error, setError] = useState(null);
 
   const addTask = (e) => {
     e.preventDefault();
-    if (isEmpty(task)) {
-      console.log("Task empty");
+    if (!validForm()) {
       return;
     }
     const newTask = {
@@ -37,8 +37,7 @@ function App() {
 
   const saveTask = (e) => {
     e.preventDefault();
-    if (isEmpty(task)) {
-      console.log("Task empty");
+    if (!validForm()) {
       return;
     }
     const editedTasks = tasks.map((item) =>
@@ -50,15 +49,25 @@ function App() {
     setTask("");
   };
 
+  const validForm = () => {
+    let isValid = true;
+    setError(null);
+    if (isEmpty(task)) {
+      setError("Debe ingresar la tarea!");
+      isValid = false;
+    }
+    return isValid;
+  };
+
   return (
     <div className="container mt-5">
       <h1>Tareas</h1>
       <hr />
       <div className="row">
         <div className="col-8">
-          <h4 className="text-center">Lista de Tareas</h4>
+          <h4 className="text-center mb-2">Lista de Tareas</h4>
           {size(tasks) === 0 ? (
-            <p className="text-center">Aun no hay tareas programadas!</p>
+            <li className="list-group-item">Aun no hay tareas programadas!</li>
           ) : (
             <ul className="list-group">
               {tasks.map((task) => (
@@ -82,10 +91,11 @@ function App() {
           )}
         </div>
         <div className="col-4">
-          <h4 className="text-center">
+          <h4 className="text-center mb-2">
             {editMode ? "Modificar Tarea" : "Agregar Tarea"}
           </h4>
           <form onSubmit={editMode ? saveTask : addTask}>
+            {error && <span className="text-danger">{error}</span>}
             <input
               type="text"
               className="form-control mb-2"
