@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { isEmpty, size } from "lodash";
-import shortid from "shortid";
-import { getCollection } from "./actions";
+import { addDocument, getCollection } from "./actions";
 
 function App() {
   const [task, setTask] = useState("");
@@ -10,16 +9,17 @@ function App() {
   const [id, setId] = useState("");
   const [error, setError] = useState(null);
 
-  const addTask = (e) => {
+  const addTask = async (e) => {
     e.preventDefault();
     if (!validForm()) {
       return;
     }
-    const newTask = {
-      id: shortid.generate(),
-      name: task,
-    };
-    setTasks([...tasks, newTask]);
+    const result = await addDocument("tasks", { name: task });
+    if (!result.statusResponse) {
+      setError(result.error);
+      return;
+    }
+    setTasks([...tasks, { id: result.data.id, name: task }]);
     setTask("");
   };
 
@@ -63,7 +63,9 @@ function App() {
   useEffect(() => {
     (async () => {
       const result = await getCollection("tasks");
-      console.log(result);
+      if (result.statusResponse) {
+        setTasks(result.data);
+      }
     })();
   }, []);
 
@@ -75,7 +77,11 @@ function App() {
         <div className="col-8">
           <h4 className="text-center mb-2">Lista de Tareas</h4>
           {size(tasks) === 0 ? (
-            <li className="list-group-item">Aun no hay tareas programadas!</li>
+            <ul>
+              <li className="list-group-item">
+                Aun no hay tareas programadas!
+              </li>
+            </ul>
           ) : (
             <ul className="list-group">
               {tasks.map((task) => (
@@ -110,6 +116,7 @@ function App() {
               placeholder="Ingrese la tarea..."
               onChange={(Text) => setTask(Text.target.value)}
               value={task}
+              aria-label="Ingreses la tarea..."
             />
             <button
               className={
