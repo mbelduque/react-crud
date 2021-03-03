@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { isEmpty, size } from "lodash";
 import shortid from "shortid";
+import { getCollection } from "./actions";
 
 function App() {
   const [task, setTask] = useState("");
@@ -58,6 +59,13 @@ function App() {
     }
     return isValid;
   };
+
+  useEffect(() => {
+    (async () => {
+      const result = await getCollection("tasks");
+      console.log(result);
+    })();
+  }, []);
 
   return (
     <div className="container mt-5">
