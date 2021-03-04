@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { isEmpty, size } from "lodash";
-import { addDocument, getCollection } from "./actions";
+import { addDocument, getCollection, updateDocument } from "./actions";
 
 function App() {
   const [task, setTask] = useState("");
@@ -36,9 +36,14 @@ function App() {
     setId(task.id);
   };
 
-  const saveTask = (e) => {
+  const saveTask = async (e) => {
     e.preventDefault();
     if (!validForm()) {
+      return;
+    }
+    const result = await updateDocument("tasks", id, { name: task });
+    if (!result.statusResponse) {
+      setError(result.error);
       return;
     }
     const editedTasks = tasks.map((item) =>
