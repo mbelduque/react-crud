@@ -1,3 +1,5 @@
+Netifly deploy [Tasks App](https://tasksmanagerapp.netlify.app/).
+Firebase deploy [Tasks App](https://react-crud-8a04a.web.app/).
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
